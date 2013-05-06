@@ -2,6 +2,5 @@
 
 = render 'form'
 
-= link_to 'Show', @page
-\|
-= link_to 'Back', pages_path
+= link_to 'Show', [@project, @page], class: 'btn'
+= link_to 'Back', project_pages_path(@project), class: 'btn'

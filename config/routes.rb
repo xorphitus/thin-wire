@@ -1,7 +1,8 @@
 ThinWire::Application.routes.draw do
-  resources :pages
 
-  resources :projects
+  resources :projects, except: %w(show) do
+    resources :pages
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

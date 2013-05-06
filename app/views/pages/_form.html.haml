@@ -1,6 +1,6 @@
-= form_for @page do |f|
+= form_for [@project, @page] do |f|
   - if @page.errors.any?
-    #error_explanation
+    .alert.alert-error
       %h2= "#{pluralize(@page.errors.count, "error")} prohibited this page from being saved:"
       %ul
         - @page.errors.full_messages.each do |msg|
@@ -13,4 +13,4 @@
     = f.label :objects
     = f.text_area :objects
   .actions
-    = f.submit 'Save'
+    = f.submit 'Save', class: 'btn btn-primary'

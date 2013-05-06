@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130506114304) do
+ActiveRecord::Schema.define(version: 20130506124640) do
+
+  create_table "pages", force: true do |t|
+    t.string   "name",       null: false
+    t.text     "objects"
+    t.integer  "project_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "pages", ["project_id"], name: "index_pages_on_project_id"
 
   create_table "projects", force: true do |t|
     t.string   "name",        null: false
