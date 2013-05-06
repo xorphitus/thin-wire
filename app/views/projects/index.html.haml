@@ -1,21 +1,22 @@
 %h1 Listing projects
 
-%table
-  %tr
-    %th Name
-    %th Description
-    %th
-    %th
-    %th
+%table.table.table-striped
+  - if @projects.any?
+    %tr
+      %th Name
+      %th Description
+      %th
+      %th
+      %th
 
   - @projects.each do |project|
     %tr
       %td= project.name
-      %td= project.description
-      %td= link_to 'Show', project
-      %td= link_to 'Edit', edit_project_path(project)
-      %td= link_to 'Destroy', project, :method => :delete, :data => { :confirm => 'Are you sure?' }
+      %td= truncate project.description
+      %td= link_to 'Show', project, class: 'btn'
+      %td= link_to 'Edit', edit_project_path(project), class: 'btn'
+      %td= link_to 'Destroy', project, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
 
 %br
 
-= link_to 'New Project', new_project_path
+= link_to 'New Project', new_project_path, class: 'btn btn-primary'
