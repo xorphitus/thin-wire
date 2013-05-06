@@ -1,4 +1,6 @@
 ThinWire::Application.routes.draw do
+  resources :pages
+
   resources :projects
 
   # The priority is based upon order of creation: first created -> highest priority.
