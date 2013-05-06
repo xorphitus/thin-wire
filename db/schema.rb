@@ -14,7 +14,7 @@
 ActiveRecord::Schema.define(version: 20130506114304) do
 
   create_table "projects", force: true do |t|
-    t.string   "name"
+    t.string   "name",        null: false
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
