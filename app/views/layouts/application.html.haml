@@ -6,7 +6,22 @@
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
     = csrf_meta_tags
   %body
+    .navbar.navbar-inverse
+      .navbar-inner
+        .container
+          = link_to 'thin-wire', :root, class: 'brand'
+          - if user_signed_in?
+            .nav-collapse.collapse
+              %p.navbar-text.pull-right
+                = link_to 'sign out', destroy_user_session_path, method: :delete, class: 'navbar-link'
+
     .container
+      - if notice.present?
+        .alert.alert-info
+          = notice
+      = if alert.present?
+        .alert.alert-error
+          = alert
       = yield
     = javascript_include_tag 'application', 'data-turbolinks-track' => true
 
