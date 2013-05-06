@@ -4,18 +4,12 @@
   %table.table.table-striped
     %tr
       %th Name
-      %th Objects
-      %th
-      %th
       %th
 
     - @pages.each do |page|
       %tr
-        %td= page.name
-        %td= page.objects
-        %td= link_to 'Show', [@project, page]
-        %td= link_to 'Edit', edit_project_page_path(@project, page)
-        %td= link_to 'Destroy', [@project, page], method: :delete, data: { confirm: 'Are you sure?' }
+        %td= link_to page.name, edit_project_page_path(@project, page)
+        %td= link_to 'Destroy', [@project, page], method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
 
   %br
 

@@ -1,7 +1,7 @@
 ThinWire::Application.routes.draw do
 
   resources :projects, except: %w(show) do
-    resources :pages
+    resources :pages, except: %w(show)
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

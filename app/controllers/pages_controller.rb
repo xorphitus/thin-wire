@@ -1,16 +1,11 @@
 class PagesController < ApplicationController
   before_action :set_project
-  before_action :set_page, only: [:show, :edit, :update, :destroy]
+  before_action :set_page, only: [:edit, :update, :destroy]
 
   # GET /pages
   # GET /pages.json
   def index
     @pages = @project.pages.all
-  end
-
-  # GET /pages/1
-  # GET /pages/1.json
-  def show
   end
 
   # GET /pages/new
@@ -29,7 +24,7 @@ class PagesController < ApplicationController
 
     respond_to do |format|
       if @page.save
-        format.html { redirect_to [@project, @page], notice: 'Page was successfully created.' }
+        format.html { redirect_to project_pages_path(@project), notice: 'Page was successfully created.' }
         format.json { render action: 'show', status: :created, location: @page }
       else
         format.html { render action: 'new' }
@@ -43,7 +38,7 @@ class PagesController < ApplicationController
   def update
     respond_to do |format|
       if @page.update(page_params)
-        format.html { redirect_to [@project, @page], notice: 'Page was successfully updated.' }
+        format.html { redirect_to project_pages_path(@project), notice: 'Page was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
