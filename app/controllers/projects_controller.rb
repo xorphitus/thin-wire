@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 class ProjectsController < ApplicationController
   before_action :set_project, only: [:edit, :update, :destroy]
 
   # GET /projects
   # GET /projects.json
   def index
-    @projects = Project.all
+    @projects = current_user.projects.all
   end
 
   # GET /projects/new
@@ -23,6 +24,14 @@ class ProjectsController < ApplicationController
 
     respond_to do |format|
       if @project.save
+        # FIXME ここは nest でいける気がするんだけど上手くいかなかった. なぜだ.
+        # accepts_nested_attributes_for :project_members, allow_destroy: true
+        # というわけで後で修正をリトライするので汚いコードのままトランザクションもかけてない
+        @project.users << current_user
+        pm = @project.project_members.first
+        pm.update_attribute(:owner, true)
+        pm.save
+
         format.html { redirect_to projects_path, notice: 'Project was successfully created.' }
         format.json { render action: 'show', status: :created, location: @project }
       else
@@ -57,13 +66,14 @@ class ProjectsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_project
-      @project = Project.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def project_params
-      params.require(:project).permit(:name, :description)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_project
+    @project = current_user.projects.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def project_params
+    params.require(:project).permit(:name, :description)
+  end
 end
