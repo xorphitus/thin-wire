@@ -1,4 +1,4 @@
-= form_for @project do |f|
+= form_for @project do |project_form|
   - if @project.errors.any?
     .alert.alert-error
       %h2= "#{pluralize(@project.errors.count, "error")} prohibited this project from being saved:"
@@ -7,10 +7,15 @@
           %li= msg
 
   .field
-    = f.label :name
-    = f.text_field :name
+    = project_form.label :name
+    = project_form.text_field :name
   .field
-    = f.label :description
-    = f.text_area :description
+    = project_form.label :description
+    = project_form.text_area :description
+
+  = project_form.fields_for :project_members do |project_members_form|
+    = project_members_form.hidden_field :user_id
+    = project_members_form.hidden_field :owner
+
   .actions
-    = f.submit 'Save', class: 'btn btn-primary'
+    = project_form.submit 'Save', class: 'btn btn-primary'

@@ -11,6 +11,7 @@ class ProjectsController < ApplicationController
   # GET /projects/new
   def new
     @project = Project.new
+    @project.project_members.build(user_id: current_user.id, owner: true)
   end
 
   # GET /projects/1/edit
@@ -24,14 +25,6 @@ class ProjectsController < ApplicationController
 
     respond_to do |format|
       if @project.save
-        # FIXME ここは nest でいける気がするんだけど上手くいかなかった. なぜだ.
-        # accepts_nested_attributes_for :project_members, allow_destroy: true
-        # というわけで後で修正をリトライするので汚いコードのままトランザクションもかけてない
-        @project.users << current_user
-        pm = @project.project_members.first
-        pm.update_attribute(:owner, true)
-        pm.save
-
         format.html { redirect_to projects_path, notice: 'Project was successfully created.' }
         format.json { render action: 'show', status: :created, location: @project }
       else
@@ -74,6 +67,6 @@ class ProjectsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def project_params
-    params.require(:project).permit(:name, :description)
+    params.require(:project).permit(:name, :description, project_members_attributes: [:user_id, :owner])
   end
 end
