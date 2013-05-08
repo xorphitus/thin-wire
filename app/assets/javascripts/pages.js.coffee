@@ -2,20 +2,32 @@ return unless $('#page_editor').size()
 
 # ---------------------------
 
+# FIXME
 Backbone.sync = ->
 
 #------------------
 # Models
 #------------------
+
+defaultProperties = ->
+  x: 0
+  y: 0
+  height: 100
+  width: 100
+
 Rectangle = Backbone.Model.extend(
   defaults: ->
-    x: 0
-    y: 0
-    height: 100
-    width: 100
+    properties = defaultProperties()
+    properties['type'] = 'rectangle'
+    properties
+)
 
-  initialize: ->
-
+Text = Backbone.Model.extend(
+  defaults: ->
+    properties = defaultProperties()
+    properties['type'] = 'text'
+    properties['content'] = 'text'
+    properties
 )
 
 #------------------
@@ -23,7 +35,10 @@ Rectangle = Backbone.Model.extend(
 #------------------
 ObjectList = Backbone.Collection.extend(
   model: (attrs, options) ->
-    new Rectangle
+    switch options.type
+      when 'rectangle' then new Rectangle(attrs, options)
+      when 'text' then new Text(attrs, options)
+      else console.error("'#{options.type} is invalid type.")
 )
 
 Objects = new ObjectList
@@ -37,17 +52,11 @@ ObjectView = Backbone.View.extend(
   events: ->
 
   initialize: ->
-    @listenTo(@model, 'change', @render)
+    @listenTo(@model, 'change', @rerender)
 
   render: ->
     model = @model
-    @$el.addClass('obj-rectangle').css(
-      left: model.get('x')
-      top: model.get('y')
-      height: model.get('height')
-      width: model.get('width')
-      border: 'solid 1px'
-    ).draggable(
+    @$el.draggable(
       containment: 'parent'
       stop: (event, ui) ->
         model.set({x: ui.position.left, y: ui.position.top})
@@ -55,7 +64,43 @@ ObjectView = Backbone.View.extend(
       stop: (event, ui) ->
         model.set({width: ui.size.width, height: ui.size.height})
     ).selectable()
-    return this
+    @rerender()
+
+  rerender: ->
+    @$el.addClass('obj-rectangle').css(
+      left: @model.get('x')
+      top: @model.get('y')
+      height: @model.get('height')
+      width: @model.get('width')
+    )
+    this
+)
+
+RectangleView = ObjectView.extend(
+  render: ->
+    ObjectView.prototype.render.apply(this, arguments)
+    @$el.css(border: 'solid 1px')
+    this
+)
+
+TextView = ObjectView.extend(
+  render: ->
+    ObjectView.prototype.render.apply(this, arguments)
+    model = @model
+    @$el.css(border: 'dotted 1px').on 'dblclick', ->
+      $self = $(this).hide()
+      textarea = $('<textarea>').val(model.get('content')).on 'blur', ->
+        $textarea = $(this)
+        model.set('content', $textarea.val())
+        $textarea.remove()
+        $self.show()
+      $self.after(textarea)
+    this
+
+  rerender: ->
+    ObjectView.prototype.rerender.apply(this, arguments)
+    @$el.text(@model.get('content'))
+    this
 )
 
 AppView = Backbone.View.extend(
@@ -63,21 +108,31 @@ AppView = Backbone.View.extend(
 
   events:
     'click #new_rectangle': 'createRectangle'
+    'click #new_text': 'createText'
     'click #save_page': 'savePage'
 
   initialize: ->
     @listenTo(Objects, 'add', @addOne)
+    @render()
 
   render: ->
-    $('#page_objects').val()
+    self = this
+    #JSON.parse($('#page_objects').val()).forEach (obj) ->
+    #  self.addOne(new Rectangle(obj))
     return this
 
   addOne: (object) ->
-    view = new ObjectView({model: object})
+    switch object.get('type')
+      when 'rectangle' then view = new RectangleView({model: object})
+      when 'text' then view = new TextView({model: object})
+      else console.error("'#{object.type} is invalid type.")
     $('#edit_area').append(view.render().el)
 
   createRectangle: ->
-    Objects.create()
+    Objects.create({}, {type: 'rectangle'})
+
+  createText: ->
+    Objects.create({}, {type: 'text'})
 
   savePage: ->
     $('#page_objects').val(JSON.stringify(Objects))
