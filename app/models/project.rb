@@ -4,7 +4,4 @@ class Project < ActiveRecord::Base
   has_many :pages, dependent: :destroy
 
   validates_presence_of :name
-
-  # FIXME for Rails 4
-  attr_accessible :name, :description
 end
