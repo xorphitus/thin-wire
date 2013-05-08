@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require bootstrap
+//= require jquery.ui.all
 //= require underscore
 //= require backbone
 //= require_tree .

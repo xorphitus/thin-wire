@@ -1,7 +1,8 @@
-unless $('#page_editor').size()
-  return
+return unless $('#page_editor').size()
 
 # ---------------------------
+
+Backbone.sync = ->
 
 #------------------
 # Models
@@ -14,16 +15,18 @@ Rectangle = Backbone.Model.extend(
     width: 100
 
   initialize: ->
-    console.log 'hoge'
+
 )
 
 #------------------
 # Collections
 #------------------
-Objects = Backbone.Collection.extend(
+ObjectList = Backbone.Collection.extend(
   model: (attrs, options) ->
     new Rectangle
 )
+
+Objects = new ObjectList
 
 #------------------
 # Views
@@ -31,47 +34,53 @@ Objects = Backbone.Collection.extend(
 ObjectView = Backbone.View.extend(
   tagName: 'div'
 
-  template: _.template($('#item-template').html())
-
-  events:
-    "click .toggle"   : "toggleDone"
-    "dblclick .view"  : "edit"
-    "click a.destroy" : "clear"
-    "keypress .edit"  : "updateOnEnter"
-    "blur .edit"      : "close"
+  events: ->
 
   initialize: ->
-    this.listenTo(this.model, 'change', this.render)
-    this.listenTo(this.model, 'destroy', this.remove)
+    @listenTo(@model, 'change', @render)
 
   render: ->
-    this.$el.html(this.template(this.model.toJSON()))
-    this.$el.toggleClass('done', this.model.get('done'))
-    this.input = this.$('.edit')
+    model = @model
+    @$el.addClass('obj-rectangle').css(
+      left: model.get('x')
+      top: model.get('y')
+      height: model.get('height')
+      width: model.get('width')
+      border: 'solid 1px'
+    ).draggable(
+      containment: 'parent'
+      stop: (event, ui) ->
+        model.set({x: ui.position.left, y: ui.position.top})
+    ).resizable(
+      stop: (event, ui) ->
+        model.set({width: ui.size.width, height: ui.size.height})
+    ).selectable()
     return this
 )
 
 AppView = Backbone.View.extend(
-  tagName: 'div'
-
-  template: _.template($('#item-template').html())
+  el: $('#page_editor')
 
   events:
-    "click .toggle"   : "toggleDone"
-    "dblclick .view"  : "edit"
-    "click a.destroy" : "clear"
-    "keypress .edit"  : "updateOnEnter"
-    "blur .edit"      : "close"
+    'click #new_rectangle': 'createRectangle'
+    'click #save_page': 'savePage'
 
   initialize: ->
-    this.listenTo(this.model, 'change', this.render)
-    this.listenTo(this.model, 'destroy', this.remove)
+    @listenTo(Objects, 'add', @addOne)
 
   render: ->
-    this.$el.html(this.template(this.model.toJSON()))
-    this.$el.toggleClass('done', this.model.get('done'))
-    this.input = this.$('.edit')
+    $('#page_objects').val()
     return this
+
+  addOne: (object) ->
+    view = new ObjectView({model: object})
+    $('#edit_area').append(view.render().el)
+
+  createRectangle: ->
+    Objects.create()
+
+  savePage: ->
+    $('#page_objects').val(JSON.stringify(Objects))
 )
 
 # kick application

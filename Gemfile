@@ -47,6 +47,7 @@ end
 # Basis
 #-------------------------------
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 gem 'haml-rails'
 gem 'bootstrap-sass', '~> 2.3.1.0'
 

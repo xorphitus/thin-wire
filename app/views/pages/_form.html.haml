@@ -9,10 +9,21 @@
   .field
     = f.label :name
     = f.text_field :name
-  .field
-    = f.label :objects
-    = f.text_area :objects
+
+  #page_editor(data-no-turbolink='1')
+    %ul.inline
+      %li
+        = link_to 'Rectangle', '#', id: 'new_rectangle', class: 'btn'
+      %li
+        = link_to 'Text', '#', id: 'new_text', class: 'btn'
+      %li
+        = link_to 'Free Hand', '#', id: 'new_freehand', class: 'btn'
+    #edit_area.well
+    = link_to 'to_json', '#', id: 'save_page', class: 'btn'
+
+  %span
+    output JSON
+  = f.text_area :objects
+
   .actions
     = f.submit 'Save', class: 'btn btn-primary'
-
-#page_editor
